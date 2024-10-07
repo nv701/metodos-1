@@ -1,71 +1,104 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package metodos;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Usuario {
-    private String nombreUsuario;
-    private String password;
-    private String archivoUsuarios;
+/**
+ * Clase que representa un usuario con nombre y contraseña.
+ * Permite gestionar la lista de tareas del usuario.
+ */
+public class Usuario implements Serializable {
+    private String nombre;
+    private String contraseña;
     private ListaDeTareas listaDeTareas;
 
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Constructor para inicializar un nuevo usuario con su nombre y contraseña.
+     *
+     * @param nombre      Nombre del usuario.
+     * @param contraseña  Contraseña del usuario.
+     */
     public Usuario(String nombre, String contraseña) {
-        this.nombreUsuario = nombre;
-        this.password = contraseña;
-        this.archivoUsuarios = "usuarios.txt";
-        this.listaDeTareas = new ListaDeTareas(nombre);
+        this.nombre = nombre;
+        this.contraseña = contraseña;
+        this.listaDeTareas = new ListaDeTareas();
     }
 
+    /**
+     * Obtiene el nombre del usuario.
+     *
+     * @return Nombre del usuario.
+     */
     public String getNombre() {
-        return nombreUsuario;
+        return nombre;
     }
 
+    /**
+     * Establece un nuevo nombre para el usuario.
+     *
+     * @param nombre Nuevo nombre del usuario.
+     */
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    /**
+     * Obtiene la contraseña del usuario.
+     *
+     * @return Contraseña del usuario.
+     */
     public String getContraseña() {
-        return password;
+        return contraseña;
     }
 
+    /**
+     * Establece una nueva contraseña para el usuario.
+     *
+     * @param contraseña Nueva contraseña del usuario.
+     */
+    public void setContraseña(String contraseña) {
+        this.contraseña = contraseña;
+    }
+
+    /**
+     * Obtiene la lista de tareas del usuario.
+     *
+     * @return Lista de tareas del usuario.
+     */
     public ListaDeTareas getListaDeTareas() {
         return listaDeTareas;
     }
 
+    /**
+     * Guarda los usuarios en un archivo binario.
+     */
     public void guardarUsuarios() {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivoUsuarios, true))) {
-            bw.write(nombreUsuario + "," + password);
-            bw.newLine();
+        List<Usuario> usuarios = cargarUsuarios();
+        usuarios.add(this);
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("usuarios.bin"))) {
+            out.writeObject(usuarios);
         } catch (IOException e) {
-            System.out.println("Error al guardar usuarios: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
+    /**
+     * Carga los usuarios desde un archivo binario.
+     *
+     * @return Lista de usuarios almacenados en el archivo.
+     */
     public static List<Usuario> cargarUsuarios() {
         List<Usuario> usuarios = new ArrayList<>();
-        File archivo = new File("usuarios.txt");
-        if (!archivo.exists()) {
-            try {
-                archivo.createNewFile();
-            } catch (IOException e) {
-                System.out.println("Error al crear el archivo de usuarios: " + e.getMessage());
-            }
-            return usuarios;
-        }
-
-        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                String[] partes = linea.split(",");
-                if (partes.length == 2) {
-                    usuarios.add(new Usuario(partes[0], partes[1]));
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Error al cargar usuarios: " + e.getMessage());
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("usuarios.bin"))) {
+            usuarios = (List<Usuario>) in.readObject();
+        } catch (FileNotFoundException e) {
+            System.out.println("No se encontró el archivo de usuarios.");
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
         return usuarios;
-    }
+    }
 }

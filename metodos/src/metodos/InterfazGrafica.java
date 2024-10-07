@@ -1,29 +1,18 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package metodos;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.time.LocalDate;
 import java.util.List;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
+import javax.swing.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * Clase que representa la interfaz gráfica de la aplicación.
+ * Permite al usuario iniciar sesión, registrar usuarios y gestionar sus tareas.
+ */
 public class InterfazGrafica {
     private JFrame ventanaPrincipal;
     private JList<Tarea> listaTareas;
@@ -35,6 +24,10 @@ public class InterfazGrafica {
     private int anchoCampoLogin = 10;
     private int anchoCampoTarea = 10;
 
+    /**
+     * Constructor de la clase `InterfazGrafica`.
+     * Inicializa la interfaz de inicio de sesión y registro de usuarios.
+     */
     public InterfazGrafica() {
         ventanaPrincipal = new JFrame("LISTA DE TAREAS");
         ventanaPrincipal.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -44,8 +37,6 @@ public class InterfazGrafica {
 
         modeloTareas = new DefaultListModel<>();
         listaTareas = new JList<>(modeloTareas);
-        listaTareas.setBackground(new Color(255, 255, 255));
-        listaTareas.setForeground(new Color(0, 0, 0));
 
         JPanel panelLogin = new JPanel();
         panelLogin.setBackground(new Color(220, 220, 220));
@@ -53,11 +44,6 @@ public class InterfazGrafica {
         campoContraseña = new JTextField(anchoCampoLogin);
         JButton btnIniciarSesion = new JButton("Iniciar Sesión");
         JButton btnRegistrar = new JButton("Registrar");
-
-        btnIniciarSesion.setBackground(new Color(60, 120, 240));
-        btnIniciarSesion.setForeground(Color.WHITE);
-        btnRegistrar.setBackground(new Color(60, 120, 240));
-        btnRegistrar.setForeground(Color.WHITE);
 
         panelLogin.add(new JLabel("Usuario:"));
         panelLogin.add(campoUsuario);
@@ -73,6 +59,10 @@ public class InterfazGrafica {
         ventanaPrincipal.setVisible(true);
     }
 
+    /**
+     * Método para iniciar sesión con los datos proporcionados.
+     * Valida las credenciales y muestra la lista de tareas del usuario si las credenciales son correctas.
+     */
     private void iniciarSesion() {
         String usuario = campoUsuario.getText();
         String contraseña = campoContraseña.getText();
@@ -88,6 +78,10 @@ public class InterfazGrafica {
         JOptionPane.showMessageDialog(ventanaPrincipal, "Usuario o contraseña incorrectos.");
     }
 
+    /**
+     * Método para registrar un nuevo usuario con los datos ingresados.
+     * Crea un nuevo usuario, lo guarda en la lista y muestra la lista de tareas vacía.
+     */
     private void registrarUsuario() {
         String usuario = campoUsuario.getText();
         String contraseña = campoContraseña.getText();
@@ -102,6 +96,10 @@ public class InterfazGrafica {
         }
     }
 
+    /**
+     * Muestra la lista de tareas del usuario en la interfaz gráfica.
+     * Permite agregar, completar, eliminar, modificar y guardar tareas.
+     */
     private void mostrarListaDeTareas() {
         ventanaPrincipal.getContentPane().removeAll();
         ventanaPrincipal.setSize(650, 450);
@@ -111,19 +109,6 @@ public class InterfazGrafica {
         JButton btnEliminar = new JButton("ELIMINAR TAREA");
         JButton btnModificar = new JButton("MODIFICAR TAREA");
         JButton btnImprimir = new JButton("IMPRIMIR LISTA");
-
-        btnAñadir.setBackground(new Color(60, 120, 240));
-        btnAñadir.setForeground(Color.WHITE);
-        btnCompletar.setBackground(new Color(60, 120, 240));
-        btnCompletar.setForeground(Color.WHITE);
-        btnEliminar.setBackground(new Color(60, 120, 240));
-        btnEliminar.setForeground(Color.WHITE);
-        btnModificar.setBackground(new Color(60, 120, 240));
-        btnModificar.setForeground(Color.WHITE);
-        btnImprimir.setBackground(new Color(60, 120, 240));
-        btnImprimir.setForeground(Color.WHITE);
-        btnFinalizar.setBackground(new Color(240, 60, 60));
-        btnFinalizar.setForeground(Color.WHITE);
 
         btnAñadir.addActionListener(e -> añadirTarea());
         btnCompletar.addActionListener(e -> completarTarea());
@@ -138,7 +123,6 @@ public class InterfazGrafica {
         }
 
         JPanel panelSuperior = new JPanel();
-        panelSuperior.setBackground(new Color(220, 220, 220));
         panelSuperior.add(btnAñadir);
         panelSuperior.add(btnFinalizar);
 
@@ -146,7 +130,6 @@ public class InterfazGrafica {
         panelCentral.add(new JScrollPane(listaTareas), BorderLayout.CENTER);
 
         JPanel panelInferior = new JPanel();
-        panelInferior.setBackground(new Color(220, 220, 220));
         panelInferior.add(btnCompletar);
         panelInferior.add(btnEliminar);
         panelInferior.add(btnModificar);
@@ -160,6 +143,10 @@ public class InterfazGrafica {
         ventanaPrincipal.repaint();
     }
 
+    /**
+     * Añade una nueva tarea a la lista de tareas.
+     * Solicita al usuario los detalles de la tarea a través de una ventana emergente.
+     */
     private void añadirTarea() {
         JTextField campoNombre = new JTextField(10);
         JTextField campoFecha = new JTextField(10);
@@ -190,6 +177,9 @@ public class InterfazGrafica {
         }
     }
 
+    /**
+     * Marca la tarea seleccionada como completada.
+     */
     private void completarTarea() {
         Tarea tareaSeleccionada = listaTareas.getSelectedValue();
         if (tareaSeleccionada != null) {
@@ -202,6 +192,9 @@ public class InterfazGrafica {
         }
     }
 
+    /**
+     * Elimina la tarea seleccionada de la lista.
+     */
     private void eliminarTarea() {
         Tarea tareaSeleccionada = listaTareas.getSelectedValue();
         if (tareaSeleccionada != null) {
@@ -212,6 +205,10 @@ public class InterfazGrafica {
         }
     }
 
+    /**
+     * Modifica la tarea seleccionada.
+     * Solicita nuevos valores para la tarea y los guarda.
+     */
     private void modificarTarea() {
         Tarea tareaSeleccionada = listaTareas.getSelectedValue();
         if (tareaSeleccionada != null) {
@@ -241,34 +238,41 @@ public class InterfazGrafica {
                     tareaSeleccionada.setNombre(nuevoNombre);
                     tareaSeleccionada.setFecha(LocalDate.parse(nuevaFechaString));
                     tareaSeleccionada.setPrioridad(nuevaPrioridad);
+                    modeloTareas.removeElement(tareaSeleccionada);
+                    modeloTareas.addElement(tareaSeleccionada);
                     tareasUsuario.guardarTareas();
-                    modeloTareas.set(listaTareas.getSelectedIndex(), tareaSeleccionada);
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(ventanaPrincipal, "ERROR AL MODIFICAR LA TAREA: " + e.getMessage());
+                    JOptionPane.showMessageDialog(ventanaPrincipal, "ERROR AL MODIFICAR TAREA: " + e.getMessage());
                 }
             }
         } else {
-            JOptionPane.showMessageDialog(ventanaPrincipal, "Por favor seleccione una tarea para modificar.");
+            JOptionPane.showMessageDialog(ventanaPrincipal, "POR FAVOR SELECCIONE UNA TAREA PARA MODIFICAR.");
         }
     }
 
+    /**
+     * Imprime la lista de tareas en un archivo de texto.
+     */
     private void imprimirLista() {
-        String destinoTXT = "LISTA DE TAREAS.txt";
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(destinoTXT))) {
-            writer.write("LISTA DE TAREAS:");
-            writer.newLine();
-            for (Tarea tarea : tareasUsuario.getTareas()) {
-                writer.write(tarea.toString());
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("ListaDeTareas.txt"));
+            for (int i = 0; i < modeloTareas.size(); i++) {
+                writer.write(modeloTareas.get(i).toString());
                 writer.newLine();
             }
-            JOptionPane.showMessageDialog(ventanaPrincipal, "La lista de tareas ha sido exportada a " + destinoTXT);
+            writer.close();
+            JOptionPane.showMessageDialog(ventanaPrincipal, "LISTA DE TAREAS IMPRESA EXITOSAMENTE.");
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(ventanaPrincipal, "Error al generar el archivo de texto: " + e.getMessage());
+            JOptionPane.showMessageDialog(ventanaPrincipal, "ERROR AL IMPRIMIR LA LISTA: " + e.getMessage());
         }
     }
 
+    /**
+     * Guarda la lista de tareas y cierra la aplicación.
+     */
     private void finalizarPrograma() {
-        ventanaPrincipal.dispose();
+        tareasUsuario.guardarTareas();
+        JOptionPane.showMessageDialog(ventanaPrincipal, "LISTA DE TAREAS GUARDADA.");
         System.exit(0);
-    }
+    }
 }

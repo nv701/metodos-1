@@ -1,75 +1,77 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package metodos;
 
-import java.time.LocalDate;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListaDeTareas {
-    private String nombreDeUsuario;
-    private List<Tarea> tareasPersonales;
-    private String nombreArchivoTareas;
+/**
+ * Clase que representa la lista de tareas de un usuario.
+ * Permite agregar, eliminar y guardar las tareas.
+ */
+public class ListaDeTareas implements Serializable {
+    private List<Tarea> tareas;
 
-    public ListaDeTareas(String nombreUsuario) {
-        this.nombreDeUsuario = nombreUsuario;
-        this.tareasPersonales = new ArrayList<>();
-        this.nombreArchivoTareas = nombreUsuario + "_tareas.txt";
-        cargarTareas();
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Constructor para inicializar una lista de tareas vacía.
+     */
+    public ListaDeTareas() {
+        tareas = new ArrayList<>();
     }
 
-    public void agregarTarea(Tarea tarea) {
-        tareasPersonales.add(tarea);
-        guardarTareas();
-    }
-
-    public void eliminarTarea(Tarea tarea) {
-        tareasPersonales.remove(tarea);
-        guardarTareas();
-    }
-
+    /**
+     * Obtiene la lista de tareas.
+     *
+     * @return Lista de tareas.
+     */
     public List<Tarea> getTareas() {
-        return tareasPersonales;
+        return tareas;
     }
 
+    /**
+     * Agrega una tarea a la lista de tareas.
+     *
+     * @param tarea Tarea a agregar.
+     */
+    public void agregarTarea(Tarea tarea) {
+        tareas.add(tarea);
+    }
+
+    /**
+     * Elimina una tarea de la lista de tareas.
+     *
+     * @param tarea Tarea a eliminar.
+     */
+    public void eliminarTarea(Tarea tarea) {
+        tareas.remove(tarea);
+    }
+
+    /**
+     * Guarda las tareas en un archivo binario.
+     */
     public void guardarTareas() {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(nombreArchivoTareas))) {
-            for (Tarea tarea : tareasPersonales) {
-                bw.write(tarea.getNombre() + "," + tarea.getFecha() + "," + tarea.getPrioridad() + ","
-                        + tarea.isCompletada());
-                bw.newLine();
-            }
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("tareas.bin"))) {
+            out.writeObject(tareas);
         } catch (IOException e) {
-            System.out.println("Error al guardar tareas: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    private void cargarTareas() {
-        File archivo = new File(nombreArchivoTareas);
-        if (!archivo.exists()) {
-            return;
+    /**
+     * Carga las tareas desde un archivo binario.
+     *
+     * @return Lista de tareas almacenadas en el archivo.
+     */
+    public static List<Tarea> cargarTareas() {
+        List<Tarea> tareas = new ArrayList<>();
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("tareas.bin"))) {
+            tareas = (List<Tarea>) in.readObject();
+        } catch (FileNotFoundException e) {
+            System.out.println("No se encontró el archivo de tareas.");
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
-
-        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                String[] partes = linea.split(",");
-                if (partes.length == 4) {
-                    String nombre = partes[0];
-                    LocalDate fecha = LocalDate.parse(partes[1]);
-                    String prioridad = partes[2];
-                    boolean completada = Boolean.parseBoolean(partes[3]);
-                    Tarea tarea = new Tarea(nombre, fecha, prioridad);
-                    tarea.setCompletada(completada);
-                    tareasPersonales.add(tarea);
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Error al cargar tareas: " + e.getMessage());
-        }
-    }
+        return tareas;
+    }
 }
